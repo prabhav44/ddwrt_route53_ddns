@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	flags "../internal"
+	flags "../internal/flags"
 	publicip "../pkg/publicip"
 	setddns "../pkg/setddns"
 )
