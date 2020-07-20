@@ -17,6 +17,7 @@ type Parameters struct {
 	Hostname     string
 	APIkey       string
 	SharedSecret string
+	APIURL       string
 }
 
 // GetFlags parses flags provided at runtime and returns a pointer to the Operation struct generated
@@ -27,16 +28,17 @@ func GetFlags() Operation {
 	hostnamePtrSetCommand := setCommand.String("hostname", "", "Hostname you'd like to update with new IP for its A record in route53")
 	apiKeyPtrSetCommand := setCommand.String("api-key", "", "API-Key used to make API calls")
 	sharedSecretPtrSetCommand := setCommand.String("shared-secret", "", "Shared Secret used for your hostname")
+	apiURLPtrSetCommand := setCommand.String("api-url", "", "Base URL of your Route53 DDNS API")
 
 	// sub-command used to Get the current IP for a hostname in the DynamoDB table
 	getCommand := flag.NewFlagSet("get", flag.ExitOnError)
 	apiKeyPtrGetCommand := getCommand.String("api-key", "", "API-Key used to make API calls")
+	apiURLPtrGetCommand := getCommand.String("api-url", "", "Base URL of your Route53 DDNS API")
 
 	// os.Args length must be 2 or above to include subcommands
 	// if its not then error out
 	if len(os.Args) < 2 {
 		log.Fatalln("set, get, or list-hosts subcommands are required")
-		os.Exit(1)
 	}
 
 	// switch statement evaluating which sub-command to parse
@@ -66,12 +68,18 @@ func GetFlags() Operation {
 			os.Exit(1)
 		}
 
+		if *apiURLPtrSetCommand == "" {
+			setCommand.PrintDefaults()
+			os.Exit(1)
+		}
+
 		return Operation{
 			Name: os.Args[1],
 			Parameters: Parameters{
 				Hostname:     *hostnamePtrSetCommand,
 				APIkey:       *apiKeyPtrSetCommand,
 				SharedSecret: *sharedSecretPtrSetCommand,
+				APIURL:       *apiURLPtrSetCommand,
 			},
 		}
 	}
@@ -82,12 +90,18 @@ func GetFlags() Operation {
 			os.Exit(1)
 		}
 
+		if *apiURLPtrGetCommand == "" {
+			setCommand.PrintDefaults()
+			os.Exit(1)
+		}
+
 		return Operation{
 			Name: os.Args[1],
 			Parameters: Parameters{
 				Hostname:     "",
 				APIkey:       *apiKeyPtrGetCommand,
 				SharedSecret: "",
+				APIURL:       *apiURLPtrGetCommand,
 			},
 		}
 	}
@@ -98,6 +112,7 @@ func GetFlags() Operation {
 			Hostname:     "",
 			APIkey:       "",
 			SharedSecret: "",
+			APIURL:       "",
 		},
 	}
 }
