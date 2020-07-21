@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
 	flags "../internal/flags"
@@ -28,7 +29,6 @@ func main() {
 		if err != nil {
 			log.Fatalln(err)
 		}
-		log.Println(getIPv4response.ReturnStatus)
-		log.Println(getIPv4response.ReturnMessage)
+		fmt.Println(getIPv4response.ReturnMessage)
 	}
 }
